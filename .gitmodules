@@ -1,0 +1,6 @@
+[submodule "FitNationFrontend"]
+	path = FitNationFrontend
+	url = https://github.com/7asebat/FitNationFrontend
+[submodule "FitNationBackend"]
+	path = FitNationBackend
+	url = https://github.com/7asebat/FitNationBackend
