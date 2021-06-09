@@ -1,0 +1,49 @@
+version: "3"
+
+services:
+  backend:
+    container_name: fitnation-backend-c
+    image: fitnation-backend-i
+    build: ./FitNationBackend
+    command: bash -c "rm -f tmp/pids/server.pid && ((rake db:exists && rake db:migrate) || rake db:setup) && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    ports:
+      - "3000:3000"
+    environment:
+      DB_USER: root
+      DB_NAME: fitnation
+      DB_PASSWORD: verysecret
+      DB_HOST: mysql
+    depends_on:
+      - mysql
+    links:
+      - mysql
+    volumes:
+      - fitnation-backend-storage:/app/storage
+  frontend:
+    container_name: fitnation-frontend-c
+    image: fitnation-frontend-i
+    build:
+      context: ./FitNationFrontend
+      args:
+        BACKEND_ROUTE: http://localhost:3000/
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+    links:
+      - backend
+  mysql:
+    container_name: "fitnation-mysql-c"
+    image: mysql:5.7.34
+    environment:
+      - MYSQL_ROOT_PASSWORD=verysecret
+      - MYSQL_PASSWORD=verysecret
+      - MYSQL_DATABASE=fitnation
+    ports:
+      - "3306:3306"
+    volumes:
+      - fitnation-mysql-data:/var/lib/mysql
+
+volumes:
+  fitnation-mysql-data:
+  fitnation-backend-storage:
